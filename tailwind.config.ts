@@ -31,6 +31,10 @@ export default {
           DEFAULT: "hsl(var(--success))",
           foreground: "hsl(var(--success-foreground))",
         },
+        button: {
+          DEFAULT: "hsl(var(--button-bg))",
+          foreground: "hsl(var(--button-fg))",
+        },
         destructive: {
           DEFAULT: "hsl(var(--destructive))",
           foreground: "hsl(var(--destructive-foreground))",
@@ -71,7 +75,7 @@ export default {
       },
       fontFamily: {
         sans: ["Inter", "system-ui", "sans-serif"],
-        heading: ["Plus Jakarta Sans", "system-ui", "sans-serif"],
+        heading: ["MBCorpo Title", "Inter", "system-ui", "sans-serif"],
       },
       borderRadius: {
         lg: "var(--radius)",

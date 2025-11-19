@@ -11,6 +11,7 @@ import Reports from "./pages/Reports";
 import SystemHealth from "./pages/SystemHealth";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
+import AuthCallback from "./pages/AuthCallback"; // New import
 
 const queryClient = new QueryClient();
 
@@ -22,6 +23,7 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
+          <Route path="/auth/callback" element={<AuthCallback />} /> {/* New route */}
           <Route
             path="/users"
             element={

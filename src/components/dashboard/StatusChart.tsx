@@ -1,58 +1,70 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
-
-const data = [
-  { month: "Jan", pending: 45, approved: 65, rejected: 25 },
-  { month: "Feb", pending: 38, approved: 72, rejected: 18 },
-  { month: "Mar", pending: 52, approved: 68, rejected: 30 },
-  { month: "Apr", pending: 41, approved: 78, rejected: 22 },
-  { month: "May", pending: 48, approved: 82, rejected: 28 },
-  { month: "Jun", pending: 55, approved: 75, rejected: 32 },
-  { month: "Jul", pending: 43, approved: 85, rejected: 20 },
-  { month: "Aug", pending: 50, approved: 80, rejected: 26 },
-];
+import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Cell } from "recharts";
+import { useQuery } from "@tanstack/react-query";
+import { getPropertiesMetrics } from "@/services/backend";
 
 export function StatusChart() {
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["properties-metrics-status"],
+    queryFn: () => getPropertiesMetrics(),
+  });
+
+  const pending = data?.data?.pending ?? 0;
+  const approved = data?.data?.approved ?? 0;
+  const rejected = data?.data?.rejected ?? 0;
+
+  const chartData = [
+    { status: "Pending", value: pending, color: "hsl(var(--chart-2))" },
+    { status: "Approved", value: approved, color: "hsl(var(--chart-3))" },
+    { status: "Rejected", value: rejected, color: "hsl(var(--chart-1))" },
+  ];
+
   return (
     <Card>
       <CardHeader>
         <CardTitle className="font-heading text-lg font-semibold">
-          Project Status
+          Listings Status
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <ResponsiveContainer width="100%" height={280}>
-          <BarChart data={data} margin={{ top: 10, right: 0, left: -20, bottom: 0 }}>
-            <XAxis 
-              dataKey="month" 
-              stroke="hsl(var(--muted-foreground))" 
-              fontSize={11}
-              axisLine={false}
-              tickLine={false}
-            />
-            <YAxis 
-              stroke="hsl(var(--muted-foreground))" 
-              fontSize={11}
-              axisLine={false}
-              tickLine={false}
-            />
-            <Bar dataKey="pending" fill="hsl(var(--chart-2))" radius={[4, 4, 0, 0]} />
-            <Bar dataKey="approved" fill="hsl(var(--chart-3))" radius={[4, 4, 0, 0]} />
-            <Bar dataKey="rejected" fill="hsl(var(--chart-1))" radius={[4, 4, 0, 0]} />
-          </BarChart>
-        </ResponsiveContainer>
+        {isLoading && <div className="py-4 text-sm text-muted-foreground">Loading status metrics...</div>}
+        {isError && !isLoading && <div className="py-4 text-sm text-red-600">Failed to load status metrics.</div>}
+        {!isLoading && !isError && (
+          <ResponsiveContainer width="100%" height={280}>
+            <BarChart data={chartData} margin={{ top: 10, right: 0, left: -20, bottom: 0 }}>
+              <XAxis
+                dataKey="status"
+                stroke="hsl(var(--muted-foreground))"
+                fontSize={11}
+                axisLine={false}
+                tickLine={false}
+              />
+              <YAxis
+                stroke="hsl(var(--muted-foreground))"
+                fontSize={11}
+                axisLine={false}
+                tickLine={false}
+              />
+              <Bar dataKey="value" radius={[4, 4, 0, 0]}>
+                {chartData.map((e, i) => (
+                  <Cell key={i} fill={e.color} />
+                ))}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+        )}
         <div className="mt-4 flex justify-around text-xs">
           <div className="flex items-center gap-2">
             <div className="h-3 w-3 rounded-sm bg-[hsl(var(--chart-2))]"></div>
-            <span className="text-muted-foreground">Waiting Hours</span>
+            <span className="text-muted-foreground">Pending</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="h-3 w-3 rounded-sm bg-[hsl(var(--chart-3))]"></div>
-            <span className="text-muted-foreground">Manpower Hours</span>
+            <span className="text-muted-foreground">Approved</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="h-3 w-3 rounded-sm bg-[hsl(var(--chart-1))]"></div>
-            <span className="text-muted-foreground">Response Hours</span>
+            <span className="text-muted-foreground">Rejected</span>
           </div>
         </div>
       </CardContent>

@@ -1,6 +1,8 @@
 // src/services/api.ts
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://your-api-backend.com/api';
+// Prefer configuration via Vite env, fallback to local FastAPI default.
+// Example: VITE_API_BASE_URL=http://localhost:8015
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || `${window.location.protocol}//${window.location.hostname}:8015`;
 
 /**
  * Retrieves the authentication token from localStorage.
@@ -44,7 +46,11 @@ export const apiRequest = async <T>(endpoint: string, options: RequestInit = {})
   };
 
   try {
-    const response = await fetch(url, config);
+    // Add a 20s timeout to avoid hanging requests
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 20_000);
+    const response = await fetch(url, { ...config, signal: controller.signal });
+    clearTimeout(timeout);
 
     if (!response.ok) {
       // Attempt to parse error response from the body, otherwise use status text
@@ -58,12 +64,18 @@ export const apiRequest = async <T>(endpoint: string, options: RequestInit = {})
       throw new Error(errorMessage);
     }
 
-    // If the response has no content, return an empty object to avoid JSON parsing errors
+    // If the response has no content, return an empty object to avoid parsing errors
     if (response.status === 204 || response.headers.get('content-length') === '0') {
       return {} as T;
     }
 
-    return await response.json() as T;
+    const contentType = response.headers.get('content-type') || '';
+    if (contentType.includes('application/json')) {
+      return await response.json() as T;
+    }
+    // Fallback to text for non-JSON endpoints (cast to T)
+    const text = await response.text();
+    return text as unknown as T;
   } catch (error) {
     console.error('API request failed:', error);
     throw error;

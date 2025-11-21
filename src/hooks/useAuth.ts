@@ -15,8 +15,16 @@ interface AuthContextType {
 
 const AUTH_TOKEN_KEY = 'access_token';
 const REDIRECT_PATH_KEY = 'redirectPath';
-const UMS_LOGIN_URL = 'https://rent-managment-system-user-magt.onrender.com/'; // TODO: Replace with actual UMS login URL
-const CLIENT_ID = 'YOUR_NEW_CLIENT_ID'; // TODO: Replace with actual client ID
+
+// Auth configuration via Vite env vars
+// Configure these in .env.local for local dev and in Vercel project settings for production
+const UMS_LOGIN_URL = import.meta.env.VITE_UMS_LOGIN_URL || 'https://rent-managment-system-user-magt.onrender.com/';
+const CLIENT_ID = import.meta.env.VITE_CLIENT_ID || 'YOUR_NEW_CLIENT_ID';
+const AUTH_CALLBACK_PATH = import.meta.env.VITE_AUTH_CALLBACK_PATH || '/auth/callback';
+// Optionally override the base used to compute redirect_uri (useful if your IdP expects a specific port)
+const REDIRECT_BASE = import.meta.env.VITE_REDIRECT_BASE || window.location.origin;
+// Bypass auth in local development to run frontend without backend login
+const BYPASS_AUTH = (import.meta.env.VITE_BYPASS_AUTH === 'true');
 
 export const useAuth = (): AuthContextType => {
   const [accessToken, setAccessTokenState] = useState<string | null>(null);
@@ -52,11 +60,16 @@ export const useAuth = (): AuthContextType => {
 
   // Function to redirect to UMS login page
   const redirectToUmsLogin = useCallback(() => {
+    if (BYPASS_AUTH) {
+      // Skip redirect entirely in bypass mode
+      console.warn('[Auth] Bypass enabled: skipping redirect to UMS login');
+      return;
+    }
     // Don't redirect if we are already on the callback page
-    if (window.location.pathname === '/auth/callback') return;
+    if (window.location.pathname === AUTH_CALLBACK_PATH) return;
     
     localStorage.setItem(REDIRECT_PATH_KEY, window.location.pathname + window.location.search); // Save current path
-    const redirectUri = encodeURIComponent(window.location.origin + '/auth/callback');
+    const redirectUri = encodeURIComponent(`${REDIRECT_BASE}${AUTH_CALLBACK_PATH}`);
     window.location.href = `${UMS_LOGIN_URL}?redirect_uri=${redirectUri}&client_id=${CLIENT_ID}&response_type=token`;
   }, []);
 
@@ -68,7 +81,15 @@ export const useAuth = (): AuthContextType => {
         setAccessTokenState(storedToken);
         setAuthStatus('authenticated');
       } else {
-        setAuthStatus('unauthenticated');
+        if (BYPASS_AUTH) {
+          console.warn('[Auth] Bypass enabled: setting mock access token for local development');
+          const mock = 'dev-mock-access-token';
+          localStorage.setItem(AUTH_TOKEN_KEY, mock);
+          setAccessTokenState(mock);
+          setAuthStatus('authenticated');
+        } else {
+          setAuthStatus('unauthenticated');
+        }
       }
     } catch (error) {
       console.error("Failed to initialize auth:", error);

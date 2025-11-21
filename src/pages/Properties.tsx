@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Table,
@@ -11,36 +10,39 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { CheckCircle, XCircle, Eye } from "lucide-react";
-
-const mockProperties = [
-  {
-    id: "1",
-    title: "Modern Apartment in Downtown",
-    location: "Addis Ababa",
-    status: "pending",
-    ownerId: "owner-1",
-    price: 2500,
-  },
-  {
-    id: "2",
-    title: "Luxury Villa with Pool",
-    location: "Hawassa",
-    status: "approved",
-    ownerId: "owner-2",
-    price: 8000,
-  },
-  {
-    id: "3",
-    title: "Cozy Studio Apartment",
-    location: "Bahir Dar",
-    status: "rejected",
-    ownerId: "owner-3",
-    price: 1200,
-  },
-];
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { listProperties, approveProperty, type PropertyItem } from "@/services/backend";
 
 export default function Properties() {
-  const [properties] = useState(mockProperties);
+  const queryClient = useQueryClient();
+
+  const { data: properties, isLoading, isError, error } = useQuery({
+    queryKey: ["admin-properties"],
+    queryFn: () => listProperties(),
+  });
+
+  const approveMut = useMutation({
+    mutationFn: (propertyId: string) => approveProperty(propertyId),
+    onMutate: async (propertyId: string) => {
+      // Optimistic update
+      await queryClient.cancelQueries({ queryKey: ["admin-properties"] });
+      const previous = queryClient.getQueryData<PropertyItem[]>(["admin-properties"]);
+      if (previous) {
+        queryClient.setQueryData<PropertyItem[]>(["admin-properties"], prev =>
+          (prev ?? []).map(p => p.id === propertyId ? { ...p, status: "approved" } : p)
+        );
+      }
+      return { previous };
+    },
+    onError: (_err, _id, ctx) => {
+      if (ctx?.previous) {
+        queryClient.setQueryData(["admin-properties"], ctx.previous);
+      }
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin-properties"] });
+    }
+  });
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -73,6 +75,9 @@ export default function Properties() {
           </CardTitle>
         </CardHeader>
         <CardContent>
+          {isLoading && <div className="py-6 text-sm text-muted-foreground">Loading properties...</div>}
+          {isError && <div className="py-6 text-sm text-red-600">Failed to load properties: {(error as Error)?.message}</div>}
+          {!isLoading && !isError && (
           <Table>
             <TableHeader>
               <TableRow>
@@ -84,11 +89,11 @@ export default function Properties() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {properties.map((property) => (
+              {properties?.map((property: PropertyItem) => (
                 <TableRow key={property.id}>
                   <TableCell className="font-medium">{property.title}</TableCell>
                   <TableCell>{property.location}</TableCell>
-                  <TableCell>{property.price.toLocaleString()}</TableCell>
+                  <TableCell>{Number(property.price).toLocaleString()}</TableCell>
                   <TableCell>{getStatusBadge(property.status)}</TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-2">
@@ -102,7 +107,8 @@ export default function Properties() {
                             size="icon"
                             className="text-success hover:text-success"
                             title="Approve"
-                          >
+                            onClick={() => approveMut.mutate(property.id)}
+                            >
                             <CheckCircle className="h-4 w-4" />
                           </Button>
                           <Button
@@ -121,6 +127,7 @@ export default function Properties() {
               ))}
             </TableBody>
           </Table>
+          )}
         </CardContent>
       </Card>
     </div>

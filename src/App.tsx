@@ -14,7 +14,15 @@ import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 import AuthCallback from "./pages/AuthCallback";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+      staleTime: 60_000, // 1 minute cache for metrics/lists to feel instant
+      retry: 1,
+    },
+  },
+});
 
 const App = () => (
   <QueryClientProvider client={queryClient}>

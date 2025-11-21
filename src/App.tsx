@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { DashboardLayout } from "./components/layout/DashboardLayout";
+import ProtectedRoute from "./components/ProtectedRoute"; // Import ProtectedRoute
 import Index from "./pages/Index";
 import Users from "./pages/Users";
 import Properties from "./pages/Properties";
@@ -11,7 +12,7 @@ import Reports from "./pages/Reports";
 import SystemHealth from "./pages/SystemHealth";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
-import AuthCallback from "./pages/AuthCallback"; // New import
+import AuthCallback from "./pages/AuthCallback";
 
 const queryClient = new QueryClient();
 
@@ -22,49 +23,70 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/auth/callback" element={<AuthCallback />} /> {/* New route */}
+          {/* Public route for authentication callback */}
+          <Route path="/auth/callback" element={<AuthCallback />} />
+
+          {/* Protected Routes */}
+          <Route
+            path="/"
+            element={
+              <ProtectedRoute>
+                <Index />
+              </ProtectedRoute>
+            }
+          />
           <Route
             path="/users"
             element={
-              <DashboardLayout>
-                <Users />
-              </DashboardLayout>
+              <ProtectedRoute>
+                <DashboardLayout>
+                  <Users />
+                </DashboardLayout>
+              </ProtectedRoute>
             }
           />
           <Route
             path="/properties"
             element={
-              <DashboardLayout>
-                <Properties />
-              </DashboardLayout>
+              <ProtectedRoute>
+                <DashboardLayout>
+                  <Properties />
+                </DashboardLayout>
+              </ProtectedRoute>
             }
           />
           <Route
             path="/reports"
             element={
-              <DashboardLayout>
-                <Reports />
-              </DashboardLayout>
+              <ProtectedRoute>
+                <DashboardLayout>
+                  <Reports />
+                </DashboardLayout>
+              </ProtectedRoute>
             }
           />
           <Route
             path="/health"
             element={
-              <DashboardLayout>
-                <SystemHealth />
-              </DashboardLayout>
+              <ProtectedRoute>
+                <DashboardLayout>
+                  <SystemHealth />
+                </DashboardLayout>
+              </ProtectedRoute>
             }
           />
           <Route
             path="/settings"
             element={
-              <DashboardLayout>
-                <Settings />
-              </DashboardLayout>
+              <ProtectedRoute>
+                <DashboardLayout>
+                  <Settings />
+                </DashboardLayout>
+              </ProtectedRoute>
             }
           />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+
+          {/* Catch-all route */}
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

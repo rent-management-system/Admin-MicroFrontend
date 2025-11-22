@@ -12,13 +12,19 @@ import { Badge } from "@/components/ui/badge";
 import { CheckCircle, XCircle, Eye } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { listProperties, approveProperty, type PropertyItem } from "@/services/backend";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function Properties() {
   const queryClient = useQueryClient();
+  const { authStatus, redirectToUmsLogin } = useAuth();
+  const isAuthed = authStatus === "authenticated";
+  const BYPASS_AUTH = import.meta.env.VITE_BYPASS_AUTH === 'true';
+  const canCallAdmin = isAuthed && !BYPASS_AUTH;
 
   const { data: properties, isLoading, isError, error } = useQuery({
     queryKey: ["admin-properties"],
     queryFn: () => listProperties(),
+    enabled: canCallAdmin,
   });
 
   const approveMut = useMutation({
@@ -68,6 +74,20 @@ export default function Properties() {
         </div>
       </div>
 
+      {(!isAuthed || BYPASS_AUTH) && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="font-heading text-lg font-semibold">Authentication Required</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center justify-between">
+              <p className="text-sm text-muted-foreground">Please log in to view and manage properties.</p>
+              <Button variant="default" onClick={redirectToUmsLogin}>Log in</Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       <Card>
         <CardHeader>
           <CardTitle className="font-heading text-lg font-semibold">
@@ -75,9 +95,9 @@ export default function Properties() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          {isLoading && <div className="py-6 text-sm text-muted-foreground">Loading properties...</div>}
+          {canCallAdmin && isLoading && <div className="py-6 text-sm text-muted-foreground">Loading properties...</div>}
           {isError && <div className="py-6 text-sm text-red-600">Failed to load properties: {(error as Error)?.message}</div>}
-          {!isLoading && !isError && (
+          {canCallAdmin && !isLoading && !isError && (
           <Table>
             <TableHeader>
               <TableRow>

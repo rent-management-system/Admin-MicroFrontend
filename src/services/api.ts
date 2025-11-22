@@ -1,8 +1,10 @@
 // src/services/api.ts
 
-// Prefer configuration via Vite env, fallback to local FastAPI default.
-// Example: VITE_API_BASE_URL=http://localhost:8015
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || `${window.location.protocol}//${window.location.hostname}:8015`;
+// Prefer configuration via Vite env. If not provided, use relative base '' so
+// requests go to the same origin and get proxied by Vite during development.
+// Example override: VITE_API_BASE_URL=http://localhost:8020
+const API_BASE_URL: string = (import.meta.env.VITE_API_BASE_URL ?? '').replace(/\/$/, '');
+const BYPASS_AUTH: boolean = import.meta.env.VITE_BYPASS_AUTH === 'true';
 
 /**
  * Retrieves the authentication token from localStorage.
@@ -24,7 +26,9 @@ const getAuthToken = (): string | null => {
  */
 export const apiRequest = async <T>(endpoint: string, options: RequestInit = {}): Promise<T> => {
   const token = getAuthToken();
-  const url = `${API_BASE_URL}${endpoint}`;
+  // Ensure endpoint starts with '/'
+  const normalizedEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+  const url = `${API_BASE_URL}${normalizedEndpoint}`;
 
   // Default headers
   const defaultHeaders: Record<string, string> = {
@@ -33,7 +37,7 @@ export const apiRequest = async <T>(endpoint: string, options: RequestInit = {})
   };
 
   // Add the Authorization header if a token exists
-  if (token) {
+  if (token && !BYPASS_AUTH) {
     defaultHeaders['Authorization'] = `Bearer ${token}`;
   }
 
@@ -57,7 +61,16 @@ export const apiRequest = async <T>(endpoint: string, options: RequestInit = {})
       let errorMessage = `API Error: ${response.status} ${response.statusText}`;
       try {
         const errorBody = await response.json();
-        errorMessage = errorBody.message || errorMessage;
+        // Prefer common error fields in order
+        const possibleMessage =
+          (typeof errorBody === 'string' ? errorBody : null) ||
+          errorBody?.message ||
+          errorBody?.detail ||
+          errorBody?.error ||
+          errorBody?.errors?.[0]?.message;
+        if (possibleMessage) {
+          errorMessage = possibleMessage;
+        }
       } catch (e) {
         // Ignore if the error response is not valid JSON
       }

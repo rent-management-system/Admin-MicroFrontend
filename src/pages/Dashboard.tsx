@@ -7,10 +7,15 @@ import { ProjectStatusCard } from "@/components/dashboard/ProjectStatusCard";
 import { KPIChart } from "@/components/dashboard/KPIChart";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getHealth } from "@/services/backend";
+import { useAuth } from "@/hooks/useAuth";
 import { useQuery } from "@tanstack/react-query";
-import { getAdminUsers, getPropertiesMetrics } from "@/services/backend";
+import { getAdminUsers, getPropertiesMetrics, listPublicProperties } from "@/services/backend";
 
 export default function Dashboard() {
+  const { authStatus } = useAuth();
+  const isAuthed = authStatus === "authenticated";
+  const BYPASS_AUTH = import.meta.env.VITE_BYPASS_AUTH === 'true';
+  const canCallAdmin = isAuthed && !BYPASS_AUTH;
   const [backendOk, setBackendOk] = useState<boolean | null>(null);
   const [backendMsg, setBackendMsg] = useState<string>("");
 
@@ -18,6 +23,7 @@ export default function Dashboard() {
   const { data: usersTotalData, isLoading: usersTotalLoading, isError: usersTotalError } = useQuery({
     queryKey: ["admin-users-total"],
     queryFn: () => getAdminUsers({ skip: 0, limit: 1 }),
+    enabled: canCallAdmin,
   });
   const totalUsers = usersTotalData?.total_users ?? 0;
   const totalUsersDisplay = usersTotalLoading ? "Loading..." : usersTotalError ? "-" : totalUsers.toLocaleString();
@@ -29,6 +35,7 @@ export default function Dashboard() {
   const { data: propsMetricsData, isLoading: propsLoading, isError: propsError } = useQuery({
     queryKey: ["properties-metrics"],
     queryFn: () => getPropertiesMetrics(),
+    enabled: canCallAdmin,
   });
   const totalListings = propsMetricsData?.data?.total_listings ?? 0;
   const totalListingsDisplay = propsLoading ? "Loading..." : propsError ? "-" : totalListings.toLocaleString();
@@ -37,6 +44,22 @@ export default function Dashboard() {
   const totalRevenueDisplay = propsLoading ? "Loading..." : propsError ? "-" : Number(totalRevenueStr).toLocaleString();
   const approvedCount = propsMetricsData?.data?.approved ?? 0;
   const approvedDisplay = propsLoading ? "Loading..." : propsError ? "-" : approvedCount.toLocaleString();
+
+  // Public properties list (minimal integration)
+  const { data: publicPropsData, isLoading: publicPropsLoading, isError: publicPropsError } = useQuery({
+    queryKey: ["public-properties", 0, 20],
+    queryFn: () => listPublicProperties({ offset: 0, limit: 20 }),
+  });
+
+  // Log to console to verify the call works end-to-end without altering UI
+  useEffect(() => {
+    if (publicPropsData) {
+      console.log("Public properties:", publicPropsData);
+    }
+    if (publicPropsError) {
+      console.error("Failed to fetch public properties", publicPropsError);
+    }
+  }, [publicPropsData, publicPropsError]);
 
   useEffect(() => {
     let mounted = true;

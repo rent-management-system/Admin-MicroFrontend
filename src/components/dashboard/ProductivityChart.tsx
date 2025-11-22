@@ -2,21 +2,26 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, Cell } from "recharts";
 import { useQuery, keepPreviousData, useQueryClient } from "@tanstack/react-query";
 import { getAdminUsers, getPropertiesMetrics } from "@/services/backend";
+import { useAuth } from "@/hooks/useAuth";
 
 export function ProductivityChart() {
   const queryClient = useQueryClient();
+  const { authStatus } = useAuth();
+  const isAuthed = authStatus === "authenticated";
   // Fetch totals
   const usersQ = useQuery({
     queryKey: ["admin-users-total-for-chart"],
     queryFn: () => getAdminUsers({ skip: 0, limit: 1 }),
     placeholderData: keepPreviousData,
     retry: 0,
+    enabled: isAuthed,
   });
   const propsQ = useQuery({
     queryKey: ["properties-metrics-for-chart"],
     queryFn: () => getPropertiesMetrics(),
     placeholderData: keepPreviousData,
     retry: 1,
+    enabled: isAuthed,
   });
 
   // Primary data from local queries

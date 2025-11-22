@@ -45,6 +45,12 @@ export type PropertyItem = {
   lon?: number | null;
 };
 
+// Public list response shape
+export type PublicPropertiesResponse = {
+  total: number;
+  items: PropertyItem[];
+};
+
 export type PaymentMetrics = {
   status_code: number;
   data: {
@@ -162,4 +168,53 @@ export async function getUserReport(lang: 'en' | 'am' = 'en'): Promise<UserRepor
 export async function exportReport(type: 'users', lang: 'en' | 'am' = 'en'): Promise<{ file_url: string }> {
   const qs = new URLSearchParams({ lang }).toString();
   return apiRequest<{ file_url: string }>(`/api/v1/admin/reports/export/${type}?${qs}`, { method: 'GET' });
+}
+
+// =============================
+// Public Properties Endpoints
+// =============================
+
+type ListPublicPropsParams = {
+  location?: string | null;
+  min_price?: number | null;
+  max_price?: number | null;
+  amenities?: string[] | null;
+  search?: string | null;
+  offset?: number;
+  limit?: number;
+};
+
+// GET /api/v1/properties/public
+export async function listPublicProperties(params: ListPublicPropsParams = {}): Promise<PublicPropertiesResponse> {
+  const {
+    location,
+    min_price,
+    max_price,
+    amenities,
+    search,
+    offset = 0,
+    limit = 20,
+  } = params;
+
+  const qs = new URLSearchParams();
+  if (location) qs.set('location', String(location));
+  if (typeof min_price === 'number') qs.set('min_price', String(min_price));
+  if (typeof max_price === 'number') qs.set('max_price', String(max_price));
+  if (search) qs.set('search', String(search));
+  if (Array.isArray(amenities)) {
+    for (const a of amenities) {
+      if (a) qs.append('amenities', a);
+    }
+  }
+  qs.set('offset', String(offset));
+  qs.set('limit', String(limit));
+
+  const query = qs.toString();
+  const url = query ? `/api/v1/properties/public?${query}` : `/api/v1/properties/public`;
+  return apiRequest<PublicPropertiesResponse>(url, { method: 'GET' });
+}
+
+// GET /api/v1/properties/public/{property_id}
+export async function getPublicProperty(property_id: string): Promise<PropertyItem> {
+  return apiRequest<PropertyItem>(`/api/v1/properties/public/${encodeURIComponent(property_id)}`, { method: 'GET' });
 }

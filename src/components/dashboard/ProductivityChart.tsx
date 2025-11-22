@@ -1,34 +1,42 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, Cell } from "recharts";
 import { useQuery, keepPreviousData, useQueryClient } from "@tanstack/react-query";
-import { getAdminUsers, getPropertiesMetrics } from "@/services/backend";
+import { getAdminUsers, getPropertiesMetrics, getPaymentMetrics } from "@/services/backend";
 import { useAuth } from "@/hooks/useAuth";
 
 export function ProductivityChart() {
   const queryClient = useQueryClient();
   const { authStatus } = useAuth();
   const isAuthed = authStatus === "authenticated";
+  const BYPASS_AUTH = import.meta.env.VITE_BYPASS_AUTH === 'true';
   // Fetch totals
   const usersQ = useQuery({
     queryKey: ["admin-users-total-for-chart"],
     queryFn: () => getAdminUsers({ skip: 0, limit: 1 }),
     placeholderData: keepPreviousData,
     retry: 0,
-    enabled: isAuthed,
+    enabled: isAuthed || BYPASS_AUTH,
   });
   const propsQ = useQuery({
     queryKey: ["properties-metrics-for-chart"],
     queryFn: () => getPropertiesMetrics(),
     placeholderData: keepPreviousData,
     retry: 1,
-    enabled: isAuthed,
+    enabled: isAuthed || BYPASS_AUTH,
+  });
+  const paymentsQ = useQuery({
+    queryKey: ["payment-metrics-for-chart"],
+    queryFn: () => getPaymentMetrics(),
+    placeholderData: keepPreviousData,
+    retry: 1,
+    enabled: isAuthed || BYPASS_AUTH,
   });
 
   // Primary data from local queries
   let usersTotal = usersQ.data?.total_users as number | undefined;
   let propertiesTotal = propsQ.data?.data?.total_listings as number | undefined;
-  let revenueTotal = propsQ.data?.data?.total_revenue !== undefined
-    ? Number(propsQ.data.data.total_revenue ?? "0")
+  let revenueTotal = paymentsQ.data?.data?.total_revenue !== undefined
+    ? Number(paymentsQ.data.data.total_revenue ?? 0)
     : undefined;
 
   // Fallback to cached queries from Dashboard if local queries failed
@@ -36,10 +44,13 @@ export function ProductivityChart() {
     const cachedUsers = queryClient.getQueryData<{ total_users: number }>(["admin-users-total"]);
     if (cachedUsers?.total_users !== undefined) usersTotal = cachedUsers.total_users;
   }
-  if ((propertiesTotal === undefined || revenueTotal === undefined || propsQ.isError)) {
+  if ((propertiesTotal === undefined || propsQ.isError)) {
     const cachedProps = queryClient.getQueryData<{ data?: { total_listings?: number; total_revenue?: string | number } }>(["properties-metrics"]);
     if (cachedProps?.data?.total_listings !== undefined) propertiesTotal = cachedProps.data.total_listings;
-    if (cachedProps?.data?.total_revenue !== undefined) revenueTotal = Number(cachedProps.data.total_revenue);
+  }
+  if (revenueTotal === undefined || paymentsQ.isError) {
+    const cachedPayments = queryClient.getQueryData<{ data?: { total_revenue?: number } }>(["payment-metrics-total"]);
+    if (cachedPayments?.data?.total_revenue !== undefined) revenueTotal = Number(cachedPayments.data.total_revenue);
   }
 
   const usersAvailable = true; // Always show Users (even if token missing)
@@ -51,9 +62,12 @@ export function ProductivityChart() {
   if (propsQ.isError) {
     console.error("Properties metrics query failed for chart:", propsQ.error);
   }
+  if (paymentsQ.isError) {
+    console.error("Payments metrics query failed for chart:", paymentsQ.error);
+  }
 
-  const isLoading = usersQ.isLoading && propsQ.isLoading;
-  const nothingLoaded = (!usersQ.data && usersQ.isError) && (!propsQ.data && propsQ.isError);
+  const isLoading = usersQ.isLoading && propsQ.isLoading && paymentsQ.isLoading;
+  const nothingLoaded = (!usersQ.data && usersQ.isError) && (!propsQ.data && propsQ.isError) && (!paymentsQ.data && paymentsQ.isError);
 
   const chartData: Array<{ label: string; value: number; fill: string }> = [
     { label: "Users", value: typeof usersTotal === 'number' ? usersTotal : 0, fill: "hsl(var(--chart-1))" },

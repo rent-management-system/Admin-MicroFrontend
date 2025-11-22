@@ -8,7 +8,7 @@ export function KPIChart() {
   const { authStatus } = useAuth();
   const isAuthed = authStatus === "authenticated";
   const BYPASS_AUTH = import.meta.env.VITE_BYPASS_AUTH === 'true';
-  const canCallAdmin = isAuthed && !BYPASS_AUTH;
+  const canCallAdmin = isAuthed || BYPASS_AUTH;
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ["payment-metrics"],

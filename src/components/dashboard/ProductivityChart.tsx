@@ -27,7 +27,9 @@ export function ProductivityChart() {
   // Primary data from local queries
   let usersTotal = usersQ.data?.total_users as number | undefined;
   let propertiesTotal = propsQ.data?.data?.total_listings as number | undefined;
-  let revenueTotal = propsQ.data ? Number(propsQ.data.data.total_revenue ?? "0") : undefined;
+  let revenueTotal = propsQ.data?.data?.total_revenue !== undefined
+    ? Number(propsQ.data.data.total_revenue ?? "0")
+    : undefined;
 
   // Fallback to cached queries from Dashboard if local queries failed
   if ((usersTotal === undefined || usersQ.isError)) {
@@ -35,7 +37,7 @@ export function ProductivityChart() {
     if (cachedUsers?.total_users !== undefined) usersTotal = cachedUsers.total_users;
   }
   if ((propertiesTotal === undefined || revenueTotal === undefined || propsQ.isError)) {
-    const cachedProps = queryClient.getQueryData<{ data?: { total_listings?: number; total_revenue?: string } }>(["properties-metrics"]);
+    const cachedProps = queryClient.getQueryData<{ data?: { total_listings?: number; total_revenue?: string | number } }>(["properties-metrics"]);
     if (cachedProps?.data?.total_listings !== undefined) propertiesTotal = cachedProps.data.total_listings;
     if (cachedProps?.data?.total_revenue !== undefined) revenueTotal = Number(cachedProps.data.total_revenue);
   }
@@ -56,7 +58,7 @@ export function ProductivityChart() {
   const chartData: Array<{ label: string; value: number; fill: string }> = [
     { label: "Users", value: typeof usersTotal === 'number' ? usersTotal : 0, fill: "hsl(var(--chart-1))" },
     { label: "Properties", value: typeof propertiesTotal === 'number' ? propertiesTotal : 0, fill: "hsl(var(--chart-2))" },
-    { label: "Revenue", value: typeof revenueTotal === 'number' ? revenueTotal : 0, fill: "hsl(var(--chart-3))" },
+    { label: "Revenue", value: typeof revenueTotal === 'number' && !Number.isNaN(revenueTotal) ? revenueTotal : 0, fill: "hsl(var(--chart-3))" },
   ];
 
   return (

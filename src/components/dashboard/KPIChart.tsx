@@ -2,17 +2,24 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, Cell } from "recharts";
 import { useQuery } from "@tanstack/react-query";
 import { getPaymentMetrics } from "@/services/backend";
+import { useAuth } from "@/hooks/useAuth";
 
 export function KPIChart() {
+  const { authStatus } = useAuth();
+  const isAuthed = authStatus === "authenticated";
+  const BYPASS_AUTH = import.meta.env.VITE_BYPASS_AUTH === 'true';
+  const canCallAdmin = isAuthed && !BYPASS_AUTH;
+
   const { data, isLoading, isError } = useQuery({
     queryKey: ["payment-metrics"],
     queryFn: () => getPaymentMetrics(),
+    enabled: canCallAdmin,
   });
 
-  const success = data?.data?.success_payments ?? 0;
-  const pending = data?.data?.pending_payments ?? 0;
-  const failed = data?.data?.failed_payments ?? 0;
-  const totalRevenue = data?.data?.total_revenue ?? 0;
+  const success = Number(data?.data?.success_payments ?? 0) || 0;
+  const pending = Number(data?.data?.pending_payments ?? 0) || 0;
+  const failed = Number(data?.data?.failed_payments ?? 0) || 0;
+  const totalRevenue = Number(data?.data?.total_revenue ?? 0) || 0;
 
   const chartData = [
     { label: "Success", value: success, fill: "hsl(var(--chart-3))" },

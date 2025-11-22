@@ -2,11 +2,18 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Cell } from "recharts";
 import { useQuery } from "@tanstack/react-query";
 import { getPropertiesMetrics } from "@/services/backend";
+import { useAuth } from "@/hooks/useAuth";
 
 export function StatusChart() {
+  const { authStatus } = useAuth();
+  const isAuthed = authStatus === "authenticated";
+  const BYPASS_AUTH = import.meta.env.VITE_BYPASS_AUTH === 'true';
+  const canCallAdmin = isAuthed && !BYPASS_AUTH;
+
   const { data, isLoading, isError } = useQuery({
     queryKey: ["properties-metrics-status"],
     queryFn: () => getPropertiesMetrics(),
+    enabled: canCallAdmin,
   });
 
   const pending = data?.data?.pending ?? 0;

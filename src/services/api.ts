@@ -26,17 +26,14 @@ const getAuthToken = (): string | null => {
  */
 export const apiRequest = async <T>(endpoint: string, options: RequestInit = {}): Promise<T> => {
   const token = getAuthToken();
-  // Ensure endpoint starts with '/'
   const normalizedEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
   const url = `${API_BASE_URL}${normalizedEndpoint}`;
 
-  // Default headers
   const defaultHeaders: Record<string, string> = {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
   };
 
-  // Add the Authorization header if a token exists
   if (token && !BYPASS_AUTH) {
     defaultHeaders['Authorization'] = `Bearer ${token}`;
   }
@@ -50,19 +47,21 @@ export const apiRequest = async <T>(endpoint: string, options: RequestInit = {})
   };
 
   try {
-    // Add a 20s timeout to avoid hanging requests
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 20_000);
-    const response = await fetch(url, { ...config, signal: controller.signal });
-    clearTimeout(timeout);
+    const timeout = setTimeout(() => {
+      controller.abort('Request timed out after 20 seconds');
+    }, 20000);
+    
+    const response = await fetch(url, { 
+      ...config, 
+      signal: controller.signal 
+    }).finally(() => clearTimeout(timeout));
 
     if (!response.ok) {
-      // Attempt to parse error response from the body, otherwise use status text
       let errorMessage = `API Error: ${response.status} ${response.statusText}`;
       try {
         const errorBody = await response.json();
-        // Prefer common error fields in order
-        const possibleMessage =
+        const possibleMessage = 
           (typeof errorBody === 'string' ? errorBody : null) ||
           errorBody?.message ||
           errorBody?.detail ||
@@ -72,12 +71,11 @@ export const apiRequest = async <T>(endpoint: string, options: RequestInit = {})
           errorMessage = possibleMessage;
         }
       } catch (e) {
-        // Ignore if the error response is not valid JSON
+        // Ignore JSON parsing errors
       }
       throw new Error(errorMessage);
     }
 
-    // If the response has no content, return an empty object to avoid parsing errors
     if (response.status === 204 || response.headers.get('content-length') === '0') {
       return {} as T;
     }
@@ -86,10 +84,14 @@ export const apiRequest = async <T>(endpoint: string, options: RequestInit = {})
     if (contentType.includes('application/json')) {
       return await response.json() as T;
     }
-    // Fallback to text for non-JSON endpoints (cast to T)
     const text = await response.text();
     return text as unknown as T;
   } catch (error) {
+    // Don't log aborted requests as errors
+    if (error instanceof Error && error.name === 'AbortError') {
+      // Re-throw with a more descriptive message
+      throw new Error(`Request was aborted: ${error.message || 'Component unmounted or request cancelled'}`);
+    }
     console.error('API request failed:', error);
     throw error;
   }

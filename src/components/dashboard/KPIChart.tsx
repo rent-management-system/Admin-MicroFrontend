@@ -10,10 +10,23 @@ export function KPIChart() {
   const BYPASS_AUTH = import.meta.env.VITE_BYPASS_AUTH === 'true';
   const canCallAdmin = isAuthed || BYPASS_AUTH;
 
-  const { data, isLoading, isError } = useQuery({
+  const { data, isLoading, isError, error } = useQuery({
     queryKey: ["payment-metrics"],
-    queryFn: () => getPaymentMetrics(),
+    queryFn: async ({ signal }) => {
+      try {
+        return await getPaymentMetrics();
+      } catch (err) {
+        // Don't log aborted requests as errors
+        if (err instanceof Error && err.name === 'AbortError') {
+          return null; // Return null to prevent error state for aborted requests
+        }
+        throw err; // Re-throw other errors
+      }
+    },
     enabled: canCallAdmin,
+    retry: 1, // Only retry once on failure
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    refetchOnWindowFocus: false, // Prevent refetching when window regains focus
   });
 
   const success = Number(data?.data?.success_payments ?? 0) || 0;
@@ -35,8 +48,14 @@ export function KPIChart() {
       </CardHeader>
       <CardContent>
         {isLoading && <div className="py-4 text-sm text-muted-foreground">Loading payment metrics...</div>}
-        {isError && !isLoading && <div className="py-4 text-sm text-red-600">Failed to load payment metrics.</div>}
-        {!isLoading && !isError && (
+        {isError && !isLoading && (
+          <div className="py-4 text-sm text-red-600">
+            {error?.message?.includes('aborted') 
+              ? 'Loading metrics was cancelled'
+              : 'Failed to load payment metrics. Please try again.'}
+          </div>
+        )}
+        {!isLoading && !isError && data && (
           <>
             <ResponsiveContainer width="100%" height={220}>
               <BarChart data={chartData} margin={{ top: 10, right: 0, left: 0, bottom: 0 }}>

@@ -1,3 +1,7 @@
+import * as XLSX from 'xlsx';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
+
 /**
  * Exports data to a CSV file
  * @param data Array of objects to export
@@ -72,7 +76,7 @@ export function exportToCsv<T extends Record<string, any>>(data: T[], filename: 
     
     // Create a download link
     const blob = new Blob(['\uFEFF' + csvContent], { 
-      type: 'text/csv;charset=utf-8;' 
+      type: 'text/csv;charset=utf-8;'
     });
     
     const url = URL.createObjectURL(blob);
@@ -97,6 +101,38 @@ export function exportToCsv<T extends Record<string, any>>(data: T[], filename: 
     throw error; // Re-throw to be handled by the caller
   }
 }
+
+/**
+ * Exports data to an Excel (XLSX) file
+ * @param data Array of objects to export
+ * @param filename Name of the file (without extension)
+ */
+export function exportToExcel<T extends Record<string, any>>(data: T[], filename: string) {
+  try {
+    console.log('Starting Excel export with data:', data);
+    if (!data || !Array.isArray(data) || data.length === 0) {
+      console.warn('No data to export or invalid data format for Excel.');
+      alert('No data available to export to Excel.');
+      return;
+    }
+
+    console.log('Data for Excel:', data);
+    const ws = XLSX.utils.json_to_sheet(data);
+    console.log('Worksheet created:', ws);
+
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Report");
+    console.log('Workbook created and sheet appended.');
+    
+    const exportFileName = `${filename}-${new Date().toISOString().split('T')[0]}.xlsx`;
+    XLSX.writeFile(wb, exportFileName);
+    console.log(`Excel export successful: ${exportFileName}`);
+  } catch (error) {
+    console.error('Error in exportToExcel:', error);
+    alert('Failed to export to Excel. Please try again.');
+  }
+}
+
 
 /**
  * Formats property data for export with comprehensive details
@@ -181,6 +217,30 @@ export function formatTenantForExport(tenant: any) {
     'Status': tenant.status ? tenant.status.charAt(0).toUpperCase() + tenant.status.slice(1) : '',
     'Date Created': formatDate(tenant.created_at),
     'Last Updated': formatDate(tenant.updated_at)
+  };
+}
+
+/**
+ * Formats user data for export
+ */
+export function formatUserForExport(user: any) {
+  const formatDate = (dateString: string) => {
+    if (!dateString) return '';
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
+  };
+
+  return {
+    'User ID': user.id || '',
+    'Full Name': user.full_name || '',
+    'Email': user.email || '',
+    'Role': user.role || '',
+    'Is Active': user.is_active ? 'Yes' : 'No',
+    'Date Created': formatDate(user.created_at),
+    'Last Updated': formatDate(user.updated_at)
   };
 }
 

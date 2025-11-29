@@ -23,6 +23,7 @@ const menuItems = [
   { title: "Reports", url: "/reports", icon: FileText },
   { title: "System Health", url: "/system-health", icon: Activity },
   { title: "Settings", url: "/settings", icon: Settings },
+  { title: "Logout", url: "/logout", icon: UserIcon }, // Added Logout item
 ];
 
 function UserProfile({ open }: { open: boolean }) {

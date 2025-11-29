@@ -13,6 +13,7 @@ import SystemHealth from "./pages/SystemHealth";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 import AuthCallback from "./pages/AuthCallback";
+import Logout from "./pages/Logout"; // Import the new Logout component
 
 // Remove AdminLayout and related imports as they're not used in the current implementation
 
@@ -33,6 +34,7 @@ const App = () => {
         <BrowserRouter>
           <Routes>
             <Route path="/auth/callback" element={<AuthCallback />} />
+            <Route path="/logout" element={<Logout />} /> {/* Add the logout route */}
             
             {/* Main Application Routes */}
             <Route

@@ -20,6 +20,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { getMockProperties, getMockUsers } from "@/services/mockDataService";
+import { exportToCsv, exportToExcel, formatPropertyForExport, formatUserForExport } from "@/utils/exportUtils";
 
 type ReportType = "properties" | "users" | "transactions";
 type ReportFormat = "csv" | "pdf" | "excel";
@@ -46,14 +47,35 @@ export function ReportsPage() {
   });
 
   const handleExport = (format: ReportFormat) => {
-    // In a real app, this would generate and download the report
-    console.log(`Exporting ${reportType} report as ${format}`, {
-      dateRange,
-      data: reportType === 'properties' ? propertiesData : usersData
-    });
-    
-    // Mock download
-    alert(`Exporting ${reportType} report as ${format}...`);
+    let dataToExport: any[] = [];
+    let filename = `${reportType}-report`;
+
+    if (reportType === 'properties' && propertiesData?.properties) {
+      dataToExport = propertiesData.properties.map(formatPropertyForExport);
+    } else if (reportType === 'users' && usersData?.users) {
+      dataToExport = usersData.users.map(formatUserForExport);
+    } else if (reportType === 'transactions') {
+      // TODO: Implement transaction data fetching and formatting
+      alert("Transaction export is not yet implemented.");
+      return;
+    }
+
+    if (dataToExport.length === 0) {
+      alert(`No ${reportType} data available to export.`);
+      return;
+    }
+
+    switch (format) {
+      case "csv":
+        exportToCsv(dataToExport, filename);
+        break;
+      case "excel":
+        exportToExcel(dataToExport, filename);
+        break;
+
+      default:
+        break;
+    }
   };
 
   const renderReportPreview = () => {
@@ -229,14 +251,7 @@ export function ReportsPage() {
                 <Download className="w-4 h-4 mr-2" />
                 Excel
               </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => handleExport("pdf")}
-              >
-                <Download className="w-4 h-4 mr-2" />
-                PDF
-              </Button>
+
             </div>
           </div>
         </div>

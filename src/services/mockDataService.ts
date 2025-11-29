@@ -269,6 +269,101 @@ export const updatePropertyStatus = async (
   return updateMockProperty(id, { status });
 };
 
+// ==================== TENANT & PAYMENT MOCK DATA ====================
+
+// Tenant data interface
+export interface Tenant {
+  id: string;
+  first_name: string;
+  last_name: string;
+  email: string;
+  phone: string;
+  property_id: string;
+  lease_start: string;
+  lease_end: string;
+  rent_amount: number;
+  status: 'active' | 'pending' | 'inactive';
+  created_at: string;
+  updated_at: string;
+}
+
+// Payment data interface
+export interface Payment {
+  id: string;
+  tenant_id: string;
+  property_id: string;
+  amount: number;
+  payment_type: 'rent' | 'deposit' | 'late_fee' | 'other';
+  status: 'completed' | 'pending' | 'failed';
+  payment_date: string;
+  created_at: string;
+  updated_at: string;
+}
+
+// Generate mock tenants
+export const getMockTenants = async (page: number = 1, pageSize: number = 10): Promise<{ tenants: Tenant[]; total: number }> => {
+  const mockTenants: Tenant[] = Array.from({ length: 50 }, (_, i) => ({
+    id: `TEN${1000 + i}`,
+    first_name: ['John', 'Jane', 'Robert', 'Emily', 'Michael', 'Sarah', 'David', 'Emma'][i % 8],
+    last_name: ['Smith', 'Johnson', 'Williams', 'Brown', 'Jones', 'Garcia', 'Miller', 'Davis'][i % 8],
+    email: `tenant${i}@example.com`,
+    phone: `+1${Math.floor(1000000000 + Math.random() * 9000000000)}`,
+    property_id: `PROP${100 + (i % 10)}`,
+    lease_start: new Date(Date.now() - Math.floor(Math.random() * 365) * 24 * 60 * 60 * 1000).toISOString(),
+    lease_end: new Date(Date.now() + Math.floor(365 + Math.random() * 365) * 24 * 60 * 60 * 1000).toISOString(),
+    rent_amount: Math.floor(500 + Math.random() * 2000),
+    status: (['active', 'pending', 'inactive'] as const)[Math.floor(Math.random() * 3)],
+    created_at: new Date(Date.now() - Math.floor(Math.random() * 365) * 24 * 60 * 60 * 1000).toISOString(),
+    updated_at: new Date().toISOString(),
+  }));
+
+  return {
+    tenants: mockTenants.slice((page - 1) * pageSize, page * pageSize),
+    total: mockTenants.length,
+  };
+};
+
+// Generate mock payments
+export const getMockPayments = async (page: number = 1, pageSize: number = 10, year: number = new Date().getFullYear()): Promise<{ payments: Payment[]; total: number }> => {
+  const months = Array.from({ length: 12 }, (_, i) => i + 1);
+  const paymentTypes = ['rent', 'deposit', 'late_fee', 'other'] as const;
+  const statuses = ['completed', 'pending', 'failed'] as const;
+  
+  const mockPayments: Payment[] = [];
+  let id = 1000;
+  
+  // Generate payments for each month
+  for (const month of months) {
+    // Generate 5-15 payments per month
+    const paymentsThisMonth = 5 + Math.floor(Math.random() * 10);
+    for (let i = 0; i < paymentsThisMonth; i++) {
+      const paymentType = paymentTypes[Math.floor(Math.random() * paymentTypes.length)];
+      const amount = paymentType === 'rent' 
+        ? 1000 + Math.floor(Math.random() * 2000) 
+        : paymentType === 'deposit' 
+          ? 500 + Math.floor(Math.random() * 1000)
+          : 10 + Math.floor(Math.random() * 100);
+      
+      mockPayments.push({
+        id: `PAY${id++}`,
+        tenant_id: `TEN${1000 + Math.floor(Math.random() * 50)}`,
+        property_id: `PROP${100 + Math.floor(Math.random() * 20)}`,
+        amount,
+        payment_type: paymentType,
+        status: statuses[Math.floor(Math.random() * statuses.length)],
+        payment_date: new Date(year, month - 1, 1 + Math.floor(Math.random() * 28)).toISOString(),
+        created_at: new Date(year, month - 1, 1 + Math.floor(Math.random() * 28)).toISOString(),
+        updated_at: new Date().toISOString(),
+      });
+    }
+  }
+
+  return {
+    payments: mockPayments.slice((page - 1) * pageSize, page * pageSize),
+    total: mockPayments.length,
+  };
+};
+
 // ==================== DASHBOARD & ANALYTICS ====================
 
 // Get payment metrics

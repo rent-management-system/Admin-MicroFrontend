@@ -18,13 +18,22 @@ const REDIRECT_PATH_KEY = 'redirectPath';
 
 // Auth configuration via Vite env vars
 // Configure these in .env.local for local dev and in Vercel project settings for production
-const UMS_LOGIN_URL = import.meta.env.VITE_UMS_LOGIN_URL || 'https://rent-managment-system-user-magt.onrender.com/';
-const CLIENT_ID = import.meta.env.VITE_CLIENT_ID || 'YOUR_NEW_CLIENT_ID';
+const UMS_LOGIN_URL = import.meta.env.VITE_UMS_LOGIN_URL || 'http://localhost:8020/auth';
+const CLIENT_ID = import.meta.env.VITE_CLIENT_ID || 'admin-client';
 const AUTH_CALLBACK_PATH = import.meta.env.VITE_AUTH_CALLBACK_PATH || '/auth/callback';
 // Optionally override the base used to compute redirect_uri (useful if your IdP expects a specific port)
 const REDIRECT_BASE = import.meta.env.VITE_REDIRECT_BASE || window.location.origin;
 // Bypass auth in local development to run frontend without backend login
-const BYPASS_AUTH = (import.meta.env.VITE_BYPASS_AUTH === 'true');
+const BYPASS_AUTH = import.meta.env.VITE_BYPASS_AUTH === 'true';
+
+console.log('Auth Configuration:', {
+  UMS_LOGIN_URL,
+  CLIENT_ID,
+  AUTH_CALLBACK_PATH,
+  REDIRECT_BASE,
+  BYPASS_AUTH,
+  currentUrl: window.location.href
+});
 
 export const useAuth = (): AuthContextType => {
   const [accessToken, setAccessTokenState] = useState<string | null>(null);

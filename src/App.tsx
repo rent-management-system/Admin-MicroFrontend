@@ -2,17 +2,19 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { DashboardLayout } from "./components/layout/DashboardLayout";
-import ProtectedRoute from "./components/ProtectedRoute"; // Import ProtectedRoute
-import Index from "./pages/Index";
+import ProtectedRoute from "./components/ProtectedRoute";
+import { DashboardPage } from "./components/dashboard/DashboardPage";
+import { PropertiesPage } from "./components/properties/PropertiesPage";
+import { ReportsPage } from "./components/reports/ReportsPage";
 import Users from "./pages/Users";
-import Properties from "./pages/Properties";
-import Reports from "./pages/Reports";
 import SystemHealth from "./pages/SystemHealth";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 import AuthCallback from "./pages/AuthCallback";
+
+// Remove AdminLayout and related imports as they're not used in the current implementation
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -24,82 +26,41 @@ const queryClient = new QueryClient({
   },
 });
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          {/* Public route for authentication callback */}
-          <Route path="/auth/callback" element={<AuthCallback />} />
+const App = () => {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/auth/callback" element={<AuthCallback />} />
+            
+            {/* Main Application Routes */}
+            <Route
+              path="/"
+              element={
+                <ProtectedRoute>
+                  <DashboardLayout />
+                </ProtectedRoute>
+              }
+            >
+              <Route index element={<DashboardPage />} />
+              <Route path="users" element={<Users />} />
+              <Route path="properties" element={<PropertiesPage />} />
+              <Route path="reports" element={<ReportsPage />} />
+              <Route path="system-health" element={<SystemHealth />} />
+              <Route path="settings" element={<Settings />} />
+            </Route>
 
-          {/* Protected Routes */}
-          <Route
-            path="/"
-            element={
-              <ProtectedRoute>
-                <Index />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/users"
-            element={
-              <ProtectedRoute>
-                <DashboardLayout>
-                  <Users />
-                </DashboardLayout>
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/properties"
-            element={
-              <ProtectedRoute>
-                <DashboardLayout>
-                  <Properties />
-                </DashboardLayout>
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/reports"
-            element={
-              <ProtectedRoute>
-                <DashboardLayout>
-                  <Reports />
-                </DashboardLayout>
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/health"
-            element={
-              <ProtectedRoute>
-                <DashboardLayout>
-                  <SystemHealth />
-                </DashboardLayout>
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/settings"
-            element={
-              <ProtectedRoute>
-                <DashboardLayout>
-                  <Settings />
-                </DashboardLayout>
-              </ProtectedRoute>
-            }
-          />
+            {/* Admin routes can be added here in the future */}
 
-          {/* Catch-all route */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+          <Toaster />
+          <Sonner />
+        </BrowserRouter>
+      </TooltipProvider>
+    </QueryClientProvider>
+  );
+};
 
 export default App;

@@ -1,0 +1,191 @@
+{
+  "properties": [
+    {
+      "id": "01eec010-15c2-4177-b0bd-6655cf06af58",
+      "user_id": "05a027b2-0aa4-4555-ba89-d9b7b9a1434b",
+      "title": "tit",
+      "description": "added added added ",
+      "location": "bole",
+      "price": 124578.00,
+      "amenities": [
+        "WiFi"
+      ],
+      "photos": [
+        "https://spdwbxirjclmafdwzkvu.supabase.co/storage/v1/object/public/images/e4ef092b-b33f-4290-8789-691652f601e1.png"
+      ],
+      "status": "APPROVED",
+      "created_at": "2025-11-21T17:39:34.451139Z",
+      "updated_at": "2025-11-28T15:23:50.504386Z",
+      "lat": 9.03,
+      "lon": 38.75,
+      "house_type": "apartment",
+      "bedrooms": 3,
+      "bathrooms": 1,
+      "area_sqm": null
+    },
+    {
+      "id": "0441db34-9061-48aa-bf3d-7fd2c5cf4df4",
+      "user_id": "f4fe0a91-e51f-4606-a805-2b9648961730",
+      "title": "አዳማ የሚገኝ ቤት",
+      "description": "ምቹ የላጤ ቤት",
+      "location": "አውራ ጎዳና ፣ አዳማ",
+      "price": 2000.00,
+      "amenities": [
+        "WiFi",
+        "Balcony"
+      ],
+      "photos": [
+        "https://spdwbxirjclmafdwzkvu.supabase.co/storage/v1/object/public/images/dab71cd7-af9f-41e6-ad5a-e4923b2b0c8b.jpg"
+      ],
+      "status": "PENDING",
+      "created_at": "2025-11-28T06:40:05.578282Z",
+      "updated_at": "2025-11-28T06:40:05.578282Z",
+      "lat": 9.03,
+      "lon": 38.75,
+      "house_type": "condominium",
+      "bedrooms": 1,
+      "bathrooms": 1,
+      "area_sqm": null
+    },
+    {
+      "id": "06c64dd2-1fa8-4c5c-9dd7-b0e95b8bec6a",
+      "user_id": "05a027b2-0aa4-4555-ba89-d9b7b9a1434b",
+      "title": "house near to bole one class",
+      "description": "i have house near to bole ",
+      "location": "bole",
+      "price": 5000.00,
+      "amenities": [
+        "WiFi"
+      ],
+      "photos": [
+        "https://spdwbxirjclmafdwzkvu.supabase.co/storage/v1/object/public/images/d3102480-64e6-4ae6-8ff4-1f3eed238b1d.jpg"
+      ],
+      "status": "DELETED",
+      "created_at": "2025-11-23T08:28:48.258058Z Urology",
+      "updated_at": "2025-11-26T21:12:20.820665Z",
+      "lat": 9.03,
+      "lon": 38.75,
+      "house_type": "private home",
+      "bedrooms": 1,
+      "bathrooms": 1,
+      "area_sqm": null
+    },
+    {
+      "id": "8d2790da-e414-460f-9fc8-c004c5019a1b",
+      "user_id": "05a027b2-0aa4-4555-ba89-d9b7b9a1434b",
+      "title": "string",
+      "description": "string",
+      "location": "string",
+      "price": 1234545.00,
+      "amenities": [
+        "wifi"
+      ],
+      "photos": [
+        "https://spdwbxirjclmafdwzkvu.supabase.co/storage/v1/object/public/images/32c1a648-bdb5-4970-a334-488790d38a0f.png"
+      ],
+      "status": "APPROVED",
+      "created_at": "2025-11-21T17:08:18.068531Z",
+      "updated_at": "2025-11-28T15:27:22.810838Z",
+      "lat": 9.03,
+      "lon": 38.75,
+      "house_type": "condominium",
+      "bedrooms": 3,
+      "bathrooms": 3,
+      "area_sqm": 120
+    },
+    {
+      "id": "b77931e2-a967-496c-8ef6-1b9aff980085",
+      "user_id": "05a027b2-0aa4-4555-ba89-d9b7b9a1434b",
+      "title": "added",
+      "description": "added addede",
+      "location": "bole ",
+      "price": 2323.00,
+      "amenities": [
+        "WiFi"
+      ],
+      "photos": [
+        "https://spdwbxirjclmafdwzkvu.supabase.co/storage/v1/object/public/images/cab95ed0-6577-4589-b2d3-1a170130fa6a.png"
+      ],
+      "status": "RESERVED",
+      "created_at": "2025-11-21T17:42:52.744737Z",
+      "updated_at": "2025-11-28T22:50:39.952881Z",
+      "lat": 9.03,
+      "lon": 38.75,
+      "house_type": "apartment",
+      "bedrooms": 2,
+      "bathrooms": 2,
+      "area_sqm": null
+    },
+    {
+      "id": "c262f37d-019b-47aa-a004-6d5451bf462d",
+      "user_id": "fc5e23e9-becd-42b1-8b32-7e7d740a8fff",
+      "title": "g+1",
+      "description": "furnished",
+      "location": "adama university ",
+      "price": 145000.00,
+      "amenities": [
+        "Parking"
+      ],
+      "photos": [
+        "https://spdwbxirjclmafdwzkvu.supabase.co/storage/v1/object/public/images/fcf77157-4570-4107-958a-ab6b1c589940.jpg"
+      ],
+      "status": "RESERVED",
+      "created_at": "2025-11-21T11:13:55.279823Z",
+      "updated_at": "2025-11-28T22:53:20.216877Z",
+      "lat": 9.03,
+      "lon": 38.75,
+      "house_type": "private home",
+      "bedrooms": 1,
+      "bathrooms": 1,
+      "area_sqm": 50
+    },
+    {
+      "id": "d962ce29-7ab6-418a-b385-28ac9fba7440",
+      "user_id": "fc5e23e9-becd-42b1-8b32-7e7d740a8fff",
+      "title": "g+2",
+      "description": "abenezer",
+      "location": "bole,adama",
+      "price": 190000.00,
+      "amenities": [
+        "wifi"
+      ],
+      "photos": [
+        "https://spdwbxirjclmafdwzkvu.supabase.co/storage/v1/object/public/images/474ccaba-ce0c-4deb-9f08-3ef050de1a1d.jpg"
+      ],
+      "status": "RESERVED",
+      "created_at": "2025-11-20T19:25:57.409068Z",
+      "updated_at": "2025-11-28T22:52:34.551528Z",
+      "lat": 9.03,
+      "lon": 38.75,
+      "house_type": "private home",
+      "bedrooms": 1,
+      "bathrooms": 1,
+      "area_sqm": 50
+    },
+    {
+      "id": "e17cdcad-a793-471d-acb0-8e52f6d1b480",
+      "user_id": "fc5e23e9-becd-42b1-8b32-7e7d740a8fff",
+      "title": "G+1",
+      "description": "furnished",
+      "location": "bole,adama",
+      "price": 220.00,
+      "amenities": [
+        "Parking",
+        "Garden",
+        "Balcony"
+      ],
+      "photos": [
+        "https://spdwbxirjclmafdwzkvu.supabase.co/storage/v1/object/public/images/192dd130-e8d9-42da-b6e0-00e54a74e6b9.jpg"
+      ],
+      "status": "RESERVED",
+      "created_at": "2025-11-24T16:22:43.485455Z",
+      "updated_at": "2025-11-28T22:53:35.712292Z",
+      "lat": 9.03,
+      "lon": 38.75,
+      "house_type": "apartment",
+      "bedrooms": 2,
+      "bathrooms": 2,
+      "area_sqm": null
+    }
+  ]
+}

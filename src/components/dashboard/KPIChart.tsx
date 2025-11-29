@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, Cell } from "recharts";
 import { useQuery } from "@tanstack/react-query";
-import { getPaymentMetrics } from "@/services/backend";
+import { getMockPaymentMetrics } from "@/services/mockDataService";
 import { useAuth } from "@/hooks/useAuth";
 
 export function KPIChart() {
@@ -11,28 +11,15 @@ export function KPIChart() {
   const canCallAdmin = isAuthed || BYPASS_AUTH;
 
   const { data, isLoading, isError, error } = useQuery({
-    queryKey: ["payment-metrics"],
-    queryFn: async ({ signal }) => {
-      try {
-        return await getPaymentMetrics();
-      } catch (err) {
-        // Don't log aborted requests as errors
-        if (err instanceof Error && err.name === 'AbortError') {
-          return null; // Return null to prevent error state for aborted requests
-        }
-        throw err; // Re-throw other errors
-      }
-    },
-    enabled: canCallAdmin,
-    retry: 1, // Only retry once on failure
+    queryKey: ["mock-payment-metrics"],
+    queryFn: getMockPaymentMetrics,
     staleTime: 5 * 60 * 1000, // 5 minutes
-    refetchOnWindowFocus: false, // Prevent refetching when window regains focus
   });
 
-  const success = Number(data?.data?.success_payments ?? 0) || 0;
-  const pending = Number(data?.data?.pending_payments ?? 0) || 0;
-  const failed = Number(data?.data?.failed_payments ?? 0) || 0;
-  const totalRevenue = Number(data?.data?.total_revenue ?? 0) || 0;
+  const success = data?.data?.success_payments || 0;
+  const pending = data?.data?.pending_payments || 0;
+  const failed = data?.data?.failed_payments || 0;
+  const totalRevenue = data?.data?.total_revenue || 0;
 
   const chartData = [
     { label: "Success", value: success, fill: "hsl(var(--chart-3))" },

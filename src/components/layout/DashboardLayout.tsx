@@ -1,14 +1,11 @@
 import { ReactNode } from "react";
+import { Outlet } from "react-router-dom";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "./AppSidebar";
 import { Bell, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-interface DashboardLayoutProps {
-  children: ReactNode;
-}
-
-export function DashboardLayout({ children }: DashboardLayoutProps) {
+export function DashboardLayout() {
   return (
     <SidebarProvider>
       <div className="flex min-h-screen w-full">
@@ -31,7 +28,9 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               </Button>
             </div>
           </header>
-          <main className="flex-1 bg-background p-6">{children}</main>
+          <main className="flex-1 bg-background p-6">
+            <Outlet />
+          </main>
         </div>
       </div>
     </SidebarProvider>

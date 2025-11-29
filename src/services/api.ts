@@ -46,34 +46,35 @@ export const apiRequest = async <T>(endpoint: string, options: RequestInit = {})
     },
   };
 
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+
   try {
-    const controller = new AbortController();
+    // If a signal was already passed in, use that instead of our controller
+    const signal = config.signal || controller.signal;
     const timeout = setTimeout(() => {
       controller.abort('Request timed out after 20 seconds');
     }, 20000);
     
-    const response = await fetch(url, { 
-      ...config, 
-      signal: controller.signal 
-    }).finally(() => clearTimeout(timeout));
+    const response = await fetch(url, {
+      ...config,
+      signal // Use the signal in the fetch options
+    });
+
+    // Clear the timeout since the request completed
+    clearTimeout(timeoutId);
 
     if (!response.ok) {
-      let errorMessage = `API Error: ${response.status} ${response.statusText}`;
+      let errorData;
       try {
-        const errorBody = await response.json();
-        const possibleMessage = 
-          (typeof errorBody === 'string' ? errorBody : null) ||
-          errorBody?.message ||
-          errorBody?.detail ||
-          errorBody?.error ||
-          errorBody?.errors?.[0]?.message;
-        if (possibleMessage) {
-          errorMessage = possibleMessage;
-        }
+        errorData = await response.json();
       } catch (e) {
-        // Ignore JSON parsing errors
+        errorData = { message: 'Failed to parse error response' };
       }
-      throw new Error(errorMessage);
+      const error = new Error(errorData.message || 'API request failed');
+      (error as any).status = response.status;
+      (error as any).data = errorData;
+      throw error;
     }
 
     if (response.status === 204 || response.headers.get('content-length') === '0') {
@@ -87,12 +88,21 @@ export const apiRequest = async <T>(endpoint: string, options: RequestInit = {})
     const text = await response.text();
     return text as unknown as T;
   } catch (error) {
+    // Clear timeout on error
+    clearTimeout(timeoutId);
+    
     // Don't log aborted requests as errors
     if (error instanceof Error && error.name === 'AbortError') {
-      // Re-throw with a more descriptive message
-      throw new Error(`Request was aborted: ${error.message || 'Component unmounted or request cancelled'}`);
+      // Create a new error to preserve the stack trace
+      const abortError = new Error('Request was aborted');
+      abortError.name = 'AbortError';
+      throw abortError;
     }
-    console.error('API request failed:', error);
+    
+    // Re-throw the error to be handled by the caller
     throw error;
+  } finally {
+    // Cleanup
+    clearTimeout(timeoutId);
   }
 };

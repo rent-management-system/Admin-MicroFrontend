@@ -1,0 +1,211 @@
+{
+    "users": [
+      {
+        "id": "007a9359-e9ed-475f-ac13-401ca149b67d",
+        "email": "test@test.com",
+        "full_name": "Test User",
+        "role": "TENANT",
+        "phone": "+251945362418",
+        "is_active": true,
+        "created_at": "2025-11-17T20:42:03.907721Z"
+      },
+      {
+        "id": "05a027b2-0aa4-4555-ba89-d9b7b9a1434b",
+        "email": "testo@gmail.com",
+        "full_name": "TEST OWNER",
+        "role": "OWNER",
+        "phone": "+251945631217",
+        "is_active": true,
+        "created_at": "2025-11-17T20:42:03.907721Z"
+      },
+      {
+        "id": "06cf73e0-ae8a-4a5b-9bef-693dd5265279",
+        "email": "lema@gmail.com",
+        "full_name": "lema ",
+        "role": "TENANT",
+        "phone": "+251920362324",
+        "is_active": true,
+        "created_at": "2025-11-26T18:01:37.323606Z"
+      },
+      {
+        "id": "1ce3314b-2748-4215-9000-586188fdbad1",
+        "email": "n@gmail.com",
+        "full_name": "n",
+        "role": "TENANT",
+        "phone": "+251901717171",
+        "is_active": true,
+        "created_at": "2025-11-28T08:52:20.251270Z"
+      },
+      {
+        "id": "1da29c79-2ef3-44ca-a0a4-b031dbe353f8",
+        "email": "dagiteferi2011@gmail.com",
+        "full_name": "Dagmawi Teferi Getaneh",
+        "role": "TENANT",
+        "phone": "+251920362324",
+        "is_active": true,
+        "created_at": "2025-11-18T12:05:14.146908Z"
+      },
+      {
+        "id": "2b1148a9-6978-4b24-a6d6-e80ee5b4362a",
+        "email": "henoktesfaye12345@gmail.com",
+        "full_name": "Henok Tesfaye",
+        "role": "TENANT",
+        "phone": "+251918917859",
+        "is_active": true,
+        "created_at": "2025-11-25T03:31:42.892190Z"
+      },
+      {
+        "id": "2c4bc230-961f-4af4-9af8-f28725595242",
+        "email": "muchako@gmail.com",
+        "full_name": "Muchako",
+        "role": "TENANT",
+        "phone": "+251927326088",
+        "is_active": true,
+        "created_at": "2025-11-24T10:47:59.470596Z"
+      },
+      {
+        "id": "43cc31aa-44e7-4f1a-b13a-b46ef015c6e1",
+        "email": "nehmu711@gmail.com",
+        "full_name": "N",
+        "role": "TENANT",
+        "phone": "+251901723123",
+        "is_active": true,
+        "created_at": "2025-11-26T13:12:44.226713Z"
+      },
+      {
+        "id": "65307137-7ab0-4973-924e-985eaf7d15d0",
+        "email": "nehm@gmail.com",
+        "full_name": "Nehm",
+        "role": "OWNER",
+        "phone": "+251901723956",
+        "is_active": true,
+        "created_at": "2025-11-26T13:50:39.984822Z"
+      },
+      {
+        "id": "73d8fa8e-aa31-46bb-b704-a514f7d0b6ef",
+        "email": "useruuu@example.com",
+        "full_name": "string",
+        "role": "TENANT",
+        "phone": "+251726407861",
+        "is_active": true,
+        "created_at": "2025-11-20T07:52:55.109303Z"
+      },
+      {
+        "id": "75b74ad0-6cd3-4da2-88b5-5e124808b61d",
+        "email": "user@example.com",
+        "full_name": "string",
+        "role": "TENANT",
+        "phone": "+251726407861",
+        "is_active": true,
+        "created_at": "2025-11-20T07:14:12.280434Z"
+      },
+      {
+        "id": "7a572f1f-f697-432c-9535-ca04df87438f",
+        "email": "testta@gmail.com",
+        "full_name": "test",
+        "role": "TENANT",
+        "phone": "+251753625353",
+        "is_active": true,
+        "created_at": "2025-11-17T21:02:46.063068Z"
+      },
+      {
+        "id": "7d3ed23f-3d47-4482-9b62-4d34d2ea8b84",
+        "email": "tejhtjeht@gmail.com",
+        "full_name": "hfjshfjdfh",
+        "role": "TENANT",
+        "phone": "+251920362324",
+        "is_active": true,
+        "created_at": "2025-11-26T18:04:44.835298Z"
+      },
+      {
+        "id": "7e2eaef3-f02b-46fb-8f9c-f41862fc372e",
+        "email": "dawashagiz@gmail.com",
+        "full_name": "dd",
+        "role": "OWNER",
+        "phone": "+251994807311",
+        "is_active": true,
+        "created_at": "2025-11-18T10:50:49.514937Z"
+      },
+      {
+        "id": "996814b4-bad8-4089-94a3-4f6020f5bd7e",
+        "email": "dagiteferi2@gmail.com",
+        "full_name": "Dagmawi Teferi Getaneh",
+        "role": "TENANT",
+        "phone": "+251920362324",
+        "is_active": true,
+        "created_at": "2025-11-21T19:20:44.240117Z"
+      },
+      {
+        "id": "a3869fd4-b48d-45cb-910b-6771bcc9a294",
+        "email": "ab8952@gmail.com",
+        "full_name": "bb",
+        "role": "TENANT",
+        "phone": "+251994807311",
+        "is_active": true,
+        "created_at": "2025-11-23T08:18:06.176179Z"
+      },
+      {
+        "id": "aaf3f85d-67f5-426c-b168-d4eb13f1bbc1",
+        "email": "ab@gmail.com",
+        "full_name": "Ab",
+        "role": "OWNER",
+        "phone": "+251918917859",
+        "is_active": true,
+        "created_at": "2025-11-26T13:53:12.189120Z"
+      },
+      {
+        "id": "b403a662-e9d4-436c-bf8d-e097d5428977",
+        "email": "nn@gmail.com",
+        "full_name": "n",
+        "role": "OWNER",
+        "phone": "+251901010101",
+        "is_active": true,
+        "created_at": "2025-11-28T09:06:19.354596Z"
+      },
+      {
+        "id": "c72e7558-7066-468b-a5b4-21801f092a4c",
+        "email": "admin@gmail.com",
+        "full_name": "Admin User 1",
+        "role": "ADMIN",
+        "phone": "",
+        "is_active": true,
+        "created_at": "2025-11-17T22:48:52.925190Z"
+      },
+      {
+        "id": "cda0ddca-5f56-4d84-984b-2e726d7305d8",
+        "email": "test12@gmial.com",
+        "full_name": "Dagmawi Teferi Getaneh",
+        "role": "TENANT",
+        "phone": "+251920362324",
+        "is_active": true,
+        "created_at": "2025-11-26T18:00:36.336248Z"
+      },
+      {
+        "id": "f37b1ff2-3b03-4ba2-a3fe-8a3a88289094",
+        "email": "ownert@gmail.com",
+        "full_name": "owner",
+        "role": "OWNER",
+        "phone": "+251920362324",
+        "is_active": true,
+        "created_at": "2025-11-21T06:30:13.532612Z"
+      },
+      {
+        "id": "f4fe0a91-e51f-4606-a805-2b9648961730",
+        "email": "enochtesfaye@gmail.com",
+        "full_name": "Tesfaye Henok ",
+        "role": "OWNER",
+        "phone": "+251918917859",
+        "is_active": true,
+        "created_at": "2025-11-25T04:00:50.087185Z"
+      },
+      {
+        "id": "fc5e23e9-becd-42b1-8b32-7e7d740a8fff",
+        "email": "abeni8952@gmail.com",
+        "full_name": "Abenezer Ayele",
+        "role": "OWNER",
+        "phone": "+251994807311",
+        "is_active": true,
+        "created_at": "2025-11-20T17:58:40.050809Z"
+      }
+    ]
+  }

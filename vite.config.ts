@@ -6,17 +6,27 @@ import { componentTagger } from "lovable-tagger";
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
   server: {
-    host: "::",
-    port: 8080,
+    host: process.env.VITE_DEV_SERVER_HOST || '::',
+    port: parseInt(process.env.VITE_DEV_SERVER_PORT || '8080', 10),
+    strictPort: true,
     proxy: {
-      // Proxy API calls to backend to avoid CORS in development
-      "/api": {
-        target: "http://localhost:8020",
+      // Proxy all API calls to the backend server
+      '^/api/.*': {
+        target: 'http://localhost:8020',
         changeOrigin: true,
+        secure: false,
+        rewrite: (path) => path.replace(/^\/api/, ''),
+        configure: (proxy, _options) => {
+          proxy.on('error', (err, _req, _res) => {
+            console.error('Proxy error:', err);
+          });
+        },
       },
-      "/health": {
-        target: "http://localhost:8020",
+      // Health check endpoint
+      '^/health': {
+        target: 'http://localhost:8020',
         changeOrigin: true,
+        secure: false,
       },
     },
   },

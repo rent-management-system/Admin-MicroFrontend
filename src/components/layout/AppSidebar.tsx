@@ -21,7 +21,7 @@ const menuItems = [
   { title: "Users", url: "/users", icon: Users },
   { title: "Properties", url: "/properties", icon: Home },
   { title: "Reports", url: "/reports", icon: FileText },
-  { title: "System Health", url: "/health", icon: Activity },
+  { title: "System Health", url: "/system-health", icon: Activity },
   { title: "Settings", url: "/settings", icon: Settings },
 ];
 
